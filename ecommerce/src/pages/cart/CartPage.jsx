@@ -1,3 +1,5 @@
+import axios from "axios";
+import { load } from "@cashfreepayments/cashfree-js";
 
 // Icons
 import { TrashIcon } from "@heroicons/react/24/outline";
@@ -19,7 +21,6 @@ import toast from "react-hot-toast";
 import { useEffect, useState } from "react";
 
 // Firebase
-import { addDoc, collection, Timestamp } from "firebase/firestore";
 import { fireDB } from "../../firebase/FirebaseConfig";
 
 // Components
@@ -81,59 +82,60 @@ const CartPage = () => {
     dispatch(decrementQuantity(id));
   };
 
-  // ================= BUY NOW FUNCTION =================
-  // Create order and save it in Firestore
-  const buyNowFunction = async () => {
-    const { name, address, pincode, mobilenumber } = addressInfo;
+  const safeCartItems = cartItems.map((item) => ({
+  id: item.id,
+  title: item.title,
+  price: item.price,
+  quantity: item.quantity,
+  category: item.category,
+  productImageUrl: item.productImageUrl,
+  // 🔥 convert time safely
+  time:
+    typeof item.time === "number"
+      ? item.time
+      : Date.now(),
+}));
 
-    // Validation
-    if (!name || !address || !pincode || !mobilenumber) {
-      return toast.error("All fields are required");
-    }
 
-    // Redirect to login if user not logged in
-    if (!user) {
-      navigate("/login");
+
+const buyNowFunction = async ({
+  amount,
+  userId,
+  cartItems: safeCartItems,
+  addressInfo,
+}) => {
+  try {
+    if (!userId) {
+      alert("User not logged in");
       return;
     }
 
-    // Order data structure
-    const orderInfo = {
+    const cashfree = await load({ mode: "sandbox" });
+
+    const res = await axios.post(`${import.meta.env.VITE_API_URL}/payment`, {
+      amount,
+      userId,
       cartItems,
       addressInfo,
-      email: user.email,
-      userid: user.uid,
-      status: "Confirmed",
-      time: Timestamp.now(),
-      date: new Date().toLocaleDateString("en-US", {
-        month: "short",
-        day: "2-digit",
-        year: "numeric",
-      }),
-    };
+    });
 
-    try {
-      // Save order to Firestore
-      await addDoc(collection(fireDB, "order"), orderInfo);
+    const { paymentSessionId } = res.data;
 
-      // Clear cart after successful order
-      dispatch(clearCart());
-      localStorage.removeItem("cart");
-
-      // Reset address form
-      setAddressInfo({
-        name: "",
-        address: "",
-        pincode: "",
-        mobilenumber: "",
-      });
-
-      toast.success("Order placed successfully 🎉");
-    } catch (error) {
-      console.error(error);
-      toast.error("Order failed");
+    if (!paymentSessionId) {
+      alert("Payment session not created");
+      return;
     }
-  };
+
+    cashfree.checkout({
+      paymentSessionId,
+      redirectTarget: "_self",
+    });
+  } catch (error) {
+    console.error("Payment error:", error);
+    alert("Payment failed");
+  }
+};
+
 
   // ================= LOCAL STORAGE =================
   // Persist cart data in localStorage
@@ -239,7 +241,13 @@ const CartPage = () => {
               <BuyNowModal
                 addressInfo={addressInfo}
                 setAddressInfo={setAddressInfo}
-                buyNowFunction={buyNowFunction}
+             buyNowFunction={() =>
+    buyNowFunction({
+      amount: totalPrice,
+      userId: user?.uid,
+      cartItems: safeCartItems, // ✅ SAFE DATA
+      addressInfo,
+    })}
               />
             </div>
           </div>

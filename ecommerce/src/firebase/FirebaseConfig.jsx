@@ -1,36 +1,39 @@
-// https://console.firebase.google.com/u/2/project/myecom-285c3/overview
 
 
 
 
-// Import the functions you need from the SDKs you need
+// const firebaseConfig = {
+//   apiKey: "AIzaSyBojL7DH2JyT11YzSwTkolerl6oTGyeY88",
+//   authDomain: "myecom-285c3.firebaseapp.com",
+//   projectId: "myecom-285c3",
+//   storageBucket: "myecom-285c3.firebasestorage.app",
+//   messagingSenderId: "94575430828",
+//   appId: "1:94575430828:web:baa0178a8bfe253cdc6309",
+//   measurementId: "G-JCCRYCWY1D"
+// };
+
+
+
+
+
+
+
 import { initializeApp } from "firebase/app";
-import { getAnalytics } from "firebase/analytics";
 import { getFirestore } from "firebase/firestore";
-import {getAuth} from "firebase/auth";
+import { getAuth } from "firebase/auth";
 
-
-// TODO: Add SDKs for Firebase products that you want to use
-// https://firebase.google.com/docs/web/setup#available-libraries
-
-// Your web app's Firebase configuration
-// For Firebase JS SDK v7.20.0 and later, measurementId is optional
 const firebaseConfig = {
-  apiKey: "AIzaSyBojL7DH2JyT11YzSwTkolerl6oTGyeY88",
-  authDomain: "myecom-285c3.firebaseapp.com",
-  projectId: "myecom-285c3",
-  storageBucket: "myecom-285c3.firebasestorage.app",
-  messagingSenderId: "94575430828",
-  appId: "1:94575430828:web:baa0178a8bfe253cdc6309",
-  measurementId: "G-JCCRYCWY1D"
+  apiKey: import.meta.env.VITE_FIREBASE_API_KEY,
+  authDomain: import.meta.env.VITE_FIREBASE_AUTH_DOMAIN,
+  projectId: import.meta.env.VITE_FIREBASE_PROJECT_ID,
+  storageBucket: import.meta.env.VITE_FIREBASE_STORAGE_BUCKET,
+  messagingSenderId: import.meta.env.VITE_FIREBASE_MESSAGING_SENDER_ID,
+  appId: import.meta.env.VITE_FIREBASE_APP_ID,
 };
 
-// Initialize Firebase
 const app = initializeApp(firebaseConfig);
-const analytics = getAnalytics(app);
 
 const fireDB = getFirestore(app);
-const auth = getAuth(app)
+const auth = getAuth(app);
 
-export {fireDB, auth}
-
+export { fireDB, auth };

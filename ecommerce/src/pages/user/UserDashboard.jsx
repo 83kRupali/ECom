@@ -1,24 +1,50 @@
-
-import { useContext } from "react";
+import { useContext, useEffect, useState } from "react";
 import Layout from "../../components/layout/Layout";
 import myContext from "../../context/myContext";
+import { collection, getDocs, query, where } from "firebase/firestore";
+import { fireDB } from "../../firebase/FirebaseConfig";
 
 const UserDashboard = () => {
-  // Get logged-in user data from localStorage
+  // Logged-in user (from localStorage)
   const user = JSON.parse(localStorage.getItem("users"));
 
-  // Get global state from context
-  const { loading, getAllOrder } = useContext(myContext);
+  // Global loading state (optional)
+  const { loading } = useContext(myContext);
 
-  // Filter orders that belong to the logged-in user
-  const userOrders = getAllOrder.filter(
-    (order) => order.userid === user?.uid
-  );
+  // Orders state
+  const [userOrders, setUserOrders] = useState([]);
+
+  // 🔥 Fetch user orders from Firestore
+  useEffect(() => {
+    const fetchOrders = async () => {
+      if (!user?.uid) return;
+
+      try {
+        const q = query(
+          collection(fireDB, "orders"),
+          where("userId", "==", user.uid)
+        );
+
+        const querySnapshot = await getDocs(q);
+
+        const orders = querySnapshot.docs.map((doc) => ({
+          id: doc.id,
+          ...doc.data(),
+        }));
+
+        setUserOrders(orders);
+      } catch (error) {
+        console.error("Error fetching orders:", error);
+      }
+    };
+
+    fetchOrders();
+  }, [user]);
 
   return (
     <Layout>
       <div className="container mx-auto px-4 py-5 lg:py-8">
-        
+
         {/* ================= USER PROFILE ================= */}
         <div className="bg-pink-50 py-5 rounded-xl border border-pink-100">
           <div className="flex justify-center">
@@ -29,7 +55,6 @@ const UserDashboard = () => {
             />
           </div>
 
-          {/* User Info */}
           <div className="text-center mt-3 space-y-1">
             <h1>
               <span className="font-bold">Name:</span> {user?.name}
@@ -52,10 +77,10 @@ const UserDashboard = () => {
             Order Details
           </h2>
 
-          {/* Loading State */}
+          {/* Loading */}
           {loading && <p>Loading...</p>}
 
-          {/* No Orders Found */}
+          {/* No Orders */}
           {!loading && userOrders.length === 0 && (
             <p className="text-gray-500">No orders found</p>
           )}
@@ -66,7 +91,7 @@ const UserDashboard = () => {
               key={order.id}
               className="mt-6 flex flex-col overflow-hidden rounded-xl border border-pink-100 md:flex-row"
             >
-              {/* ===== LEFT : ORDER INFO ===== */}
+              {/* LEFT */}
               <div className="w-full border-r border-pink-100 bg-pink-50 md:max-w-xs">
                 <div className="p-6 space-y-4">
                   <div>
@@ -76,34 +101,37 @@ const UserDashboard = () => {
 
                   <div>
                     <p className="text-sm font-semibold">Date</p>
-                    <p className="text-sm">{order.date}</p>
+                    {/* <p className="text-sm">{order.date}</p> */}
+                    <p className="text-sm">
+  {order.date ||
+    (order.createdAt?.seconds
+      ? new Date(order.createdAt.seconds * 1000).toDateString()
+      : "—")}
+</p>
+
                   </div>
 
                   <div>
                     <p className="text-sm font-semibold">Status</p>
-                    <p className="text-sm capitalize">
-                      {order.status}
-                    </p>
+                    <p className="text-sm capitalize">{order.status}</p>
                   </div>
                 </div>
               </div>
 
-              {/* ===== RIGHT : PRODUCT DETAILS ===== */}
+              {/* RIGHT */}
               <div className="flex-1 p-6">
                 <ul className="-my-6 divide-y divide-gray-200">
-                  {order.cartItems.map((item) => (
+                  {order.cartItems?.map((item) => (
                     <li
                       key={item.id}
                       className="flex flex-col py-6 md:flex-row md:items-center"
                     >
-                      {/* Product Image */}
                       <img
                         src={item.productImageUrl}
                         alt={item.title}
                         className="h-20 w-20 rounded-lg border object-contain"
                       />
 
-                      {/* Product Info */}
                       <div className="ml-5 flex-1">
                         <p className="font-bold">{item.title}</p>
                         <p className="text-sm text-gray-500">
@@ -114,7 +142,6 @@ const UserDashboard = () => {
                         </p>
                       </div>
 
-                      {/* Price */}
                       <p className="font-bold text-right">
                         ₹{item.price * item.quantity}
                       </p>
@@ -131,3 +158,26 @@ const UserDashboard = () => {
 };
 
 export default UserDashboard;
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+

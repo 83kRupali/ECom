@@ -2,9 +2,8 @@
 /**
  * MyState.jsx
  * -----------
- * This file acts as the GLOBAL STATE PROVIDER for the application.
- * It uses React Context + Firebase Firestore realtime listeners
- * to manage products, orders, users, and loading state.
+ * Global Context Provider
+ * Manages products, orders, users, and loading state
  */
 
 import { useEffect, useState } from "react";
@@ -21,20 +20,12 @@ import { fireDB } from "../firebase/FirebaseConfig";
 import toast from "react-hot-toast";
 
 const MyState = ({ children }) => {
-  // ================= GLOBAL LOADING STATE =================
+  // ================= GLOBAL LOADING =================
   const [loading, setLoading] = useState(false);
 
-  // ========================================================
-  // ====================== PRODUCTS ========================
-  // ========================================================
-
-  // Store all products
+  // ================= PRODUCTS ======================
   const [getAllProduct, setGetAllProduct] = useState([]);
 
-  /**
-   * Fetch all products from Firestore in real-time
-   * Uses onSnapshot to listen for live updates
-   */
   const getAllProductFunction = () => {
     setLoading(true);
 
@@ -47,14 +38,14 @@ const MyState = ({ children }) => {
       q,
       (snapshot) => {
         const products = snapshot.docs.map((doc) => ({
-          ...doc.data(),
           id: doc.id,
+          ...doc.data(),
         }));
         setGetAllProduct(products);
         setLoading(false);
       },
       (error) => {
-        console.error("Product Firestore Error:", error);
+        console.error("Product Error:", error);
         setLoading(false);
       }
     );
@@ -62,36 +53,30 @@ const MyState = ({ children }) => {
     return unsubscribe;
   };
 
-  // ========================================================
-  // ======================= ORDERS =========================
-  // ========================================================
-
-  // Store all orders
+  // ================= ORDERS =========================
   const [getAllOrder, setGetAllOrder] = useState([]);
 
-  /**
-   * Fetch all orders from Firestore in real-time
-   */
   const getAllOrderFunction = () => {
     setLoading(true);
 
+    // ✅ CORRECT COLLECTION NAME
     const q = query(
-      collection(fireDB, "order"),
-      orderBy("time", "desc")
+      collection(fireDB, "orders"),
+      orderBy("createdAt", "desc") // ✅ field exists
     );
 
     const unsubscribe = onSnapshot(
       q,
       (snapshot) => {
         const orders = snapshot.docs.map((doc) => ({
-          ...doc.data(),
           id: doc.id,
+          ...doc.data(),
         }));
         setGetAllOrder(orders);
         setLoading(false);
       },
       (error) => {
-        console.error("Order Firestore Error:", error);
+        console.error("Order Error:", error);
         setLoading(false);
       }
     );
@@ -99,34 +84,24 @@ const MyState = ({ children }) => {
     return unsubscribe;
   };
 
-  /**
-   * Delete an order by ID
-   */
   const orderDelete = async (id) => {
-    if (!id) return toast.error("Invalid order id");
+    if (!id) return toast.error("Invalid order ID");
 
-    setLoading(true);
     try {
-      await deleteDoc(doc(fireDB, "order", id));
+      setLoading(true);
+      await deleteDoc(doc(fireDB, "orders", id));
       toast.success("Order deleted successfully ✅");
     } catch (error) {
-      console.error(error);
+      console.error("Delete Error:", error);
       toast.error("Failed to delete order");
     } finally {
       setLoading(false);
     }
   };
 
-  // ========================================================
-  // ======================== USERS =========================
-  // ========================================================
-
-  // Store all users
+  // ================= USERS ==========================
   const [getAllUser, setGetAllUser] = useState([]);
 
-  /**
-   * Fetch all users from Firestore in real-time
-   */
   const getAllUserFunction = () => {
     setLoading(true);
 
@@ -139,14 +114,14 @@ const MyState = ({ children }) => {
       q,
       (snapshot) => {
         const users = snapshot.docs.map((doc) => ({
-          ...doc.data(),
           id: doc.id,
+          ...doc.data(),
         }));
         setGetAllUser(users);
         setLoading(false);
       },
       (error) => {
-        console.error("User Firestore Error:", error);
+        console.error("User Error:", error);
         setLoading(false);
       }
     );
@@ -154,14 +129,7 @@ const MyState = ({ children }) => {
     return unsubscribe;
   };
 
-  // ========================================================
-  // ================= APP INITIAL LOAD =====================
-  // ========================================================
-
-  /**
-   * Run all Firestore listeners when app loads
-   * Clean up listeners on unmount
-   */
+  // ================= INITIAL LOAD ===================
   useEffect(() => {
     const unsubscribeProducts = getAllProductFunction();
     const unsubscribeOrders = getAllOrderFunction();
@@ -174,10 +142,7 @@ const MyState = ({ children }) => {
     };
   }, []);
 
-  // ========================================================
-  // ================= CONTEXT PROVIDER =====================
-  // ========================================================
-
+  // ================= CONTEXT ========================
   return (
     <MyContext.Provider
       value={{
@@ -195,7 +160,6 @@ const MyState = ({ children }) => {
 };
 
 export default MyState;
-
 
 
 

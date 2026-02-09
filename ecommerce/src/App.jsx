@@ -21,6 +21,7 @@ import {Toaster} from "react-hot-toast";
 import { ProtectedRouteForUser } from "./protectedRoute/ProtectedRouteForUser";
 import { ProtectedRouteForAdmin } from "./protectedRoute/ProtectedRouteForAdmin";
 import CategoryPage from "./pages/category/CategoryPage";
+import PaymentSuccess from "./pages/PaymentSuccess/PaymentSuccess";
 
 export default function Example() {
   return (
@@ -40,6 +41,7 @@ export default function Example() {
            <Route path="/signup" element={<Signup/> } />
            <Route path="/login" element={<Login/> } />
            <Route path="/category/:categoryname" element={<CategoryPage/> } />
+           <Route path="/payment-success" element={<PaymentSuccess />} />
 
            <Route path="/user-dashboard" element={
             <ProtectedRouteForUser>

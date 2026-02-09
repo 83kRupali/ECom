@@ -10,10 +10,12 @@
     "preview": "vite preview"
   },
   "dependencies": {
+    "@cashfreepayments/cashfree-js": "^1.0.6",
     "@heroicons/react": "^2.2.0",
     "@material-tailwind/react": "^2.1.10",
     "@reduxjs/toolkit": "^2.11.2",
     "autoprefixer": "^10.4.24",
+    "axios": "^1.13.4",
     "firebase": "^12.8.0",
     "postcss": "^8.5.6",
     "react": "^18.2.0",
