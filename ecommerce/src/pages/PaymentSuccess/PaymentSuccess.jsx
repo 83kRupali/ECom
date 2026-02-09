@@ -21,7 +21,7 @@ const PaymentSuccess = () => {
     axios
       .get(`${import.meta.env.VITE_API_URL}/verify?order_id=${orderId}`)
       .then((res) => {
-        if (res.data.order_status === "PAID") {
+        if (res.data.order_status === "PAID" || res.data.order_status === "SUCCESS") {
           // ✅ CLEAR CART HERE
           dispatch(clearCart());
           localStorage.removeItem("cart");
