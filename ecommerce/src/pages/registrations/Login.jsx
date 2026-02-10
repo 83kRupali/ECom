@@ -91,7 +91,12 @@ const Login = () => {
   return (
     <div className="min-h-screen flex items-center justify-center bg-gray-100">
       {/* Loader */}
-      {loading && <Loader />}
+      {/* Loader Overlay */}
+      {loading && (
+        <div className="absolute inset-0 flex items-center justify-center bg-black/30 z-50">
+          <Loader />
+        </div>
+      )}
 
       {/* Login Card */}
       <div className="bg-pink-100 w-full max-w-sm rounded-xl shadow-md p-6">
