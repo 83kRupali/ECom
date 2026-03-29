@@ -1,4 +1,40 @@
-A full-stack e-commerce web application with User and Admin dashboards, built using React, Node.js, Firebase, and Cashfree Payment Gateway. The application allows users to browse products, manage carts, place orders, and make secure online payments, while admins can manage products, users, and orders in real time.
+
+# 🛒 E-Commerce Web Application
+
+A full-stack e-commerce web application built using **React, Node.js, and Firebase**, with **User and Admin dashboards** and secure payment integration using **Cashfree Payment Gateway**.
+
+## 🚀 Features
+- User authentication (Login/Signup)  
+- Product browsing and cart management  
+- Secure online payment integration  
+- User dashboard for order tracking  
+- Admin dashboard for managing products and orders  
+
+## ⚙️ Tech Stack
+- React.js, Redux Toolkit  
+- Node.js, Express.js  
+- Firebase (Auth & Firestore)  
+- Cashfree Payment Gateway
+
+
+## 📁 Project Structure
+```bash
+Ecommerce/
+│
+├── backend/
+│ ├── server.js
+│ ├── firebaseAdmin.js
+│ └── package.json
+│
+├── ecommerce/ (frontend)
+│ ├── src/
+│ ├── components/
+│ ├── pages/
+│ └── package.json
+
+```
+
+
 <img width="960" height="504" alt="1" src="https://github.com/user-attachments/assets/8ac8bc3f-67d5-4373-9491-b847e3854ba0" />
 <img width="960" height="504" alt="2" src="https://github.com/user-attachments/assets/b237f348-4a63-46d1-b678-5a931f0fec9d" />
 <img width="960" height="504" alt="3" src="https://github.com/user-attachments/assets/990ddcb7-e020-4760-8460-a7b8c8cff156" />
