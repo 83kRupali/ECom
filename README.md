@@ -34,6 +34,38 @@ Ecommerce/
 
 ```
 
+## 🔹 1. High-Level Design
+```bash
+Client (React App)
+        ↓
+API Layer (Node.js / Express)
+        ↓
+Database (Firebase Firestore)
+        ↓
+External Service (Cashfree Payment Gateway)
+
+```
+
+## 🔹 1. Data Flow 🛒 Order Flow
+```bash
+User → Add to Cart
+     ↓
+Frontend → Send Order Data
+     ↓
+Backend → Create Order (status: CREATED)
+     ↓
+Cashfree → Payment Page
+     ↓
+User Pays
+     ↓
+Cashfree → Redirect
+     ↓
+Frontend → Call /verify
+     ↓
+Backend → Update Order (PAID)
+
+```
+
 
 <img width="960" height="504" alt="1" src="https://github.com/user-attachments/assets/8ac8bc3f-67d5-4373-9491-b847e3854ba0" />
 <img width="960" height="504" alt="2" src="https://github.com/user-attachments/assets/b237f348-4a63-46d1-b678-5a931f0fec9d" />
